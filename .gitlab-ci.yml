@@ -51,10 +51,10 @@ integration_tests:
   stage: test
   tags: ["docker"]
   script:
-  - mvn $MAVEN_CLI_OPTS -P integration-test verify
+  - mvn $MAVEN_CLI_OPTS -DhttpBinDomain=httpbin -P integration-test verify
   services:
-  - name: "wargan/mariadb_vprs:latest"
-    alias: "maria1"
+  - name: "kennethreitz/httpbin"
+    alias: "httpbin"
   artifacts:
     reports:
       junit:
