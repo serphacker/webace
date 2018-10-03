@@ -2,6 +2,7 @@ package com.serphacker.webaxe;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.hc.client5.http.RedirectException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.cookie.Cookie;
 import org.apache.hc.client5.http.impl.cookie.BasicClientCookie;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WaHttpClientIT {
@@ -149,6 +151,48 @@ class WaHttpClientIT {
         assertEquals("forcedvalue", jsonResponse.at("/cookies/forcedcookie").asText());
     }
 
+    @Test
+    public void redirects() {
+        WaHttpResponse response;
+        WaHttpClient cli = new WaHttpClient();
 
+        // don't follow redirect by default
+        assertEquals(302, cli.doGet(httpBinUrl + "/redirect/1").code());
+
+        for (int i = 0; i < 2; i++) {
+            cli.config().followRedirect(0);
+            assertEquals(302, cli.doGet(httpBinUrl + "/redirect/1").code());
+
+            cli.config().followRedirect(1);
+            assertEquals(200, cli.doGet(httpBinUrl + "/redirect/1").code());
+
+            response = cli.doGet(httpBinUrl + "/redirect/2");
+            assertEquals(-1, response.code());
+            assertTrue(response.getException().getCause() instanceof RedirectException);
+
+            cli.config().followRedirect(2);
+            assertEquals(200, cli.doGet(httpBinUrl + "/redirect/2").code());
+
+            response = cli.doGet(httpBinUrl + "/redirect/3");
+            assertEquals(-1, response.code());
+            assertTrue(response.getException().getCause() instanceof RedirectException);
+        }
+
+    }
+
+    @Test
+    public void testGetLastRedirect(){
+        WaHttpResponse response;
+        WaHttpClient cli = new WaHttpClient();
+
+        cli.config().followRedirect(10);
+        response = cli.doGet(httpBinUrl + "/redirect/2");
+        assertEquals(200, response.code());
+        assertEquals(httpBinUrl + "/get", response.getLastRedirect());
+
+        response = cli.doGet(httpBinUrl + "/get");
+        assertEquals(200, response.code());
+        assertNull(response.getLastRedirect());
+    }
 
 }
