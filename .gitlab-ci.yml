@@ -52,6 +52,7 @@ integration_tests:
   tags: ["docker"]
   script:
   - mvn $MAVEN_CLI_OPTS -DhttpBinDomain=httpbin -P integration-test verify
+  - cat target/site/jacoco/index.html
   services:
   - name: "kennethreitz/httpbin"
     alias: "httpbin"
