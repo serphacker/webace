@@ -238,15 +238,48 @@ class WaHttpClientIT {
 
     @Test
     public void keepAlive() {
-        WaHttpResponse response;
         WaHttpClient cli = new WaHttpClient();
 
         cli.doGet(httpBinUrl + "/headers");
         cli.doGet(httpBinUrl + "/headers");
 
-        cli.connectionManager.closeIdle(0, TimeUnit.NANOSECONDS);
+        cli.closeConnection();
         cli.doGet(httpBinUrl + "/headers");
     }
 
+
+    @Test
+    public void testSupportedEncoding() throws Exception {
+        WaHttpClient cli = new WaHttpClient();
+
+        final WaHttpResponse response = cli.doGet(httpBinUrl + "/get");
+        final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+
+        String supportedEncoding = jsonResponse.at("/headers/Accept-Encoding").asText();
+
+        assertTrue(supportedEncoding.contains("gzip"), "should contains gzip");
+        assertTrue(supportedEncoding.contains("deflate"), "should contains deflate");
+    }
+
+
+    @Test
+    public void testGzip() throws Exception {
+        WaHttpClient cli = new WaHttpClient();
+
+        final WaHttpResponse response = cli.doGet(httpBinUrl + "/gzip");
+        final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+
+        assertTrue(jsonResponse.get("gzipped").asBoolean(), "should be gzipped");
+    }
+
+    @Test
+    public void testDefalte() throws Exception {
+        WaHttpClient cli = new WaHttpClient();
+
+        final WaHttpResponse response = cli.doGet(httpBinUrl + "/deflate");
+        final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+
+        assertTrue(jsonResponse.get("deflated").asBoolean(), "should be deflated");
+    }
 
 }
