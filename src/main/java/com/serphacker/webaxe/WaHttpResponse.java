@@ -1,7 +1,5 @@
 package com.serphacker.webaxe;
 
-import org.apache.hc.client5.http.classic.methods.HttpHead;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.protocol.RedirectLocations;
 import org.apache.hc.core5.http.ContentType;
@@ -9,13 +7,11 @@ import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpResponse;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WaHttpResponse implements Closeable {
+public class WaHttpResponse {
     HttpResponse httpResponse;
     HttpClientContext context;
     long executionTimeMilli;
@@ -39,7 +35,7 @@ public class WaHttpResponse implements Closeable {
     }
 
     public int code() {
-        if(httpResponse == null) {
+        if(httpResponse == null || exception != null) {
             return -1;
         }
 
@@ -162,10 +158,4 @@ public class WaHttpResponse implements Closeable {
         return null;
     }
 
-    @Override
-    public void close() throws IOException {
-        if(httpResponse instanceof Closeable) {
-            ((Closeable) httpResponse).close();
-        }
-    }
 }

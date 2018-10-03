@@ -12,10 +12,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class WaHttpClientIT {
 
@@ -27,7 +26,7 @@ class WaHttpClientIT {
     @BeforeAll
     public static void beforeAll() {
 
-        if(System.getProperty("httpBinDomain") == null){
+        if (System.getProperty("httpBinDomain") == null) {
             throw new IllegalStateException("httpBinDomain not initialized (use -DhttpBinDomain=hostname)");
         }
 
@@ -116,7 +115,7 @@ class WaHttpClientIT {
     }
 
     @Test
-    public void cookies() throws Exception{
+    public void cookies() throws Exception {
         WaHttpResponse response;
         JsonNode jsonResponse;
         WaHttpClient cli = new WaHttpClient();
@@ -181,7 +180,7 @@ class WaHttpClientIT {
     }
 
     @Test
-    public void testGetLastRedirect(){
+    public void testGetLastRedirect() {
         WaHttpResponse response;
         WaHttpClient cli = new WaHttpClient();
 
@@ -194,5 +193,60 @@ class WaHttpClientIT {
         assertEquals(200, response.code());
         assertNull(response.getLastRedirect());
     }
+
+    @Test
+    public void contentLengthMaxResponseLength() {
+        maxResponseLength(httpBinUrl + "/bytes/");
+    }
+
+    @Test
+    public void chunkedMaxResponseLength() {
+        maxResponseLength(httpBinUrl + "/stream-bytes/");
+    }
+
+    @Test
+    public void rangeMaxResponseLength() {
+        maxResponseLength(httpBinUrl + "/range/");
+    }
+
+    public void maxResponseLength(String uri) {
+        WaHttpResponse response;
+        WaHttpClient cli = new WaHttpClient();
+
+        cli.config().setMaxResponseLength(2048);
+        response = cli.doGet(uri + "1024");
+        assertEquals(200, response.code());
+        assertEquals(1024, response.getContent().length);
+        assertNull(response.getException());
+
+        cli.config.setMaxResponseLength(1024);
+        response = cli.doGet(uri + "1024");
+        assertEquals(200, response.code());
+        assertEquals(1024, response.getContent().length);
+        assertNull(response.getException());
+
+        response = cli.doGet(uri + "1025");
+        assertEquals(-1, response.code());
+        assertNull(response.getContent());
+        assertTrue(response.getException() instanceof IOException);
+
+        response = cli.doGet(uri + "1024");
+        assertEquals(200, response.code());
+        assertEquals(1024, response.getContent().length);
+        assertNull(response.getException());
+    }
+
+    @Test
+    public void keepAlive() {
+        WaHttpResponse response;
+        WaHttpClient cli = new WaHttpClient();
+
+        cli.doGet(httpBinUrl + "/headers");
+        cli.doGet(httpBinUrl + "/headers");
+
+        cli.connectionManager.closeIdle(0, TimeUnit.NANOSECONDS);
+        cli.doGet(httpBinUrl + "/headers");
+    }
+
 
 }

@@ -19,6 +19,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class WaHttpClient implements Closeable {
 
@@ -75,10 +76,11 @@ public class WaHttpClient implements Closeable {
         try {
             response.executionTimerStart();
             response.setContext(context);
-            final CloseableHttpResponse httpResponse = client.execute(request, context);
-            response.setHttpResponse(httpResponse);
-            final byte[] content = consumeResponse(httpResponse);
-            response.setContent(content);
+            try(CloseableHttpResponse httpResponse = client.execute(request, context)) {
+                response.setHttpResponse(httpResponse);
+                final byte[] content = consumeResponse(httpResponse);
+                response.setContent(content);
+            }
         } catch (IOException ex) {
             response.setException(ex);
         } finally {
@@ -114,29 +116,34 @@ public class WaHttpClient implements Closeable {
     }
 
     protected byte[] consumeResponse(CloseableHttpResponse response) throws IOException {
-        HttpEntity entity = response.getEntity();
-        long contentLength = entity.getContentLength();
+        try(HttpEntity entity = response.getEntity()) {
+            long contentLength = entity.getContentLength();
 
-        if (contentLength > config.getMaxResponseLength()) {
-            throw new IOException("content length (" + contentLength + ") is greater than max length (" +
-                config.getMaxResponseLength() + ")");
+            if (contentLength > config.getMaxResponseLength()) {
+                throw new IOException("content length (" + contentLength + ") is greater than max length (" +
+                    config.getMaxResponseLength() + ")");
+            }
+
+            byte[] buffer = new byte[config.getMaxResponseLength() + 1];
+            InputStream stream = entity.getContent();
+            int totalRead = 0;
+            int read;
+
+            while (totalRead <= config.getMaxResponseLength()
+                && (read = stream.read(buffer, totalRead, config.getMaxResponseLength() + 1 - totalRead)) != -1) {
+                totalRead += read;
+            }
+
+            if (totalRead > config.getMaxResponseLength()) {
+                throw new IOException("response is too big, already read " + totalRead + " bytes");
+            }
+
+            return Arrays.copyOfRange(buffer, 0, totalRead);
         }
+    }
 
-        byte[] buffer = new byte[config.getMaxResponseLength()];
-        InputStream stream = entity.getContent();
-        int totalRead = 0;
-        int read = 0;
-
-        while (totalRead < config.getMaxResponseLength()
-            && (read = stream.read(buffer, totalRead, config.getMaxResponseLength() - totalRead)) != -1) {
-            totalRead += read;
-        }
-
-        if (totalRead == config.getMaxResponseLength() && read != 0) {
-            throw new IOException("response is too big, already read " + totalRead + " bytes");
-        }
-
-        return Arrays.copyOfRange(buffer, 0, totalRead);
+    public void closeConnection() {
+        connectionManager.closeIdle(0, TimeUnit.NANOSECONDS);
     }
 
     @Override
