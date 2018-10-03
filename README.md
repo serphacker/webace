@@ -1,4 +1,4 @@
-# WebAxe HTTP client [![build status](https://gitlab.com/serphacker/webaxe/badges/master/pipeline.svg)](https://gitlab.com/serphacker/webaxe/commits/master) [![coverage report](https://gitlab.com/serphacker/webaxe/badges/master/coverage.svg)](https://gitlab.com/serphacker/webaxe/commits/master)
+# WebAxe java HTTP client [![build status](https://gitlab.com/serphacker/webaxe/badges/master/pipeline.svg)](https://gitlab.com/serphacker/webaxe/commits/master) [![coverage report](https://gitlab.com/serphacker/webaxe/badges/master/coverage.svg)](https://gitlab.com/serphacker/webaxe/commits/master)
 
 [WebAxe is a java HTTP client](https://gitlab.com/serphacker/webaxe) for web scraping with great proxy support based on [Apache HttpComponents](https://hc.apache.org/index.html). 
 
