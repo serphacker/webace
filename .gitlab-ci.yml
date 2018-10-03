@@ -52,6 +52,9 @@ integration_tests:
   tags: ["docker"]
   script:
   - mvn $MAVEN_CLI_OPTS -P integration-test verify
+  services:
+  - name: "wargan/mariadb_vprs:latest"
+    alias: "maria1"
   artifacts:
     reports:
       junit:

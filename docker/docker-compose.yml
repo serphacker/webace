@@ -1,0 +1,14 @@
+version: "3"
+services:
+  httpbin:
+    image: kennethreitz/httpbin
+    networks:
+      webaxe_net:
+        ipv4_address: 172.29.1.1
+
+networks:
+  webaxe_net:
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.29.0.0/16

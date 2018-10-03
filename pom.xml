@@ -41,11 +41,16 @@
 
         <!-- dependencies -->
         <!-- https://github.com/junit-team/junit5/releases -->
-        <org.junit.jupiter.junit-jupiter-api>5.3.1</org.junit.jupiter.junit-jupiter-api>
+        <org.junit.jupiter.junit-jupiter-api.version>5.3.1</org.junit.jupiter.junit-jupiter-api.version>
         <!-- https://github.com/qos-ch/slf4j/releases -->
         <org.slf4j.slf4j-api.version>1.7.25</org.slf4j.slf4j-api.version>
         <!-- https://github.com/apache/httpcomponents-client/releases -->
-        <org.apache.httpcomponents.client5.httpclient5>5.0-beta1</org.apache.httpcomponents.client5.httpclient5>
+        <org.apache.httpcomponents.client5.httpclient5.version>5.0-beta1
+        </org.apache.httpcomponents.client5.httpclient5.version>
+        <!-- https://github.com/FasterXML/jackson-databind/releases -->
+        <com.fasterxml.jackson.core.version>2.9.7</com.fasterxml.jackson.core.version>
+        <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+        <ch.qos.logback.logback-classic.version>1.2.3</ch.qos.logback.logback-classic.version>
 
         <!-- plugins -->
         <!-- https://maven.apache.org/surefire/download.cgi -->
@@ -56,12 +61,10 @@
         <org.apache.maven.plugins.maven-javadoc-plugin>3.0.1</org.apache.maven.plugins.maven-javadoc-plugin>
         <!-- https://maven.apache.org/plugins/maven-gpg-plugin/download.cgi -->
         <org.apache.maven.plugins.maven-gpg-plugin>1.6</org.apache.maven.plugins.maven-gpg-plugin>
-        <!--&lt;!&ndash; https://maven.apache.org/plugins/maven-deploy-plugin/download.cgi &ndash;&gt;-->
-        <!--<org.apache.maven.plugins.maven-deploy-plugin>2.8.2</org.apache.maven.plugins.maven-deploy-plugin>-->
-        <!--&lt;!&ndash; https://maven.apache.org/maven-release/download.cgi &ndash;&gt;-->
-        <!--<org.apache.maven.plugins.maven-release-plugin>2.5.3</org.apache.maven.plugins.maven-release-plugin>-->
         <!-- https://github.com/sonatype/nexus-maven-plugins/releases -->
         <org.sonatype.plugins.nexus-staging-maven-plugin>1.6.8</org.sonatype.plugins.nexus-staging-maven-plugin>
+        <!-- https://www.eclemma.org/jacoco/ -->
+        <org.jacoco.jacoco-maven-plugin.version>0.8.2</org.jacoco.jacoco-maven-plugin.version>
     </properties>
 
 
@@ -70,7 +73,23 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-            <version>${org.apache.httpcomponents.client5.httpclient5}</version>
+            <version>${org.apache.httpcomponents.client5.httpclient5.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${com.fasterxml.jackson.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${com.fasterxml.jackson.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${com.fasterxml.jackson.core.version}</version>
         </dependency>
 
         <dependency>
@@ -83,21 +102,28 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${org.junit.jupiter.junit-jupiter-api}</version>
+            <version>${org.junit.jupiter.junit-jupiter-api.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>${org.junit.jupiter.junit-jupiter-api}</version>
+            <version>${org.junit.jupiter.junit-jupiter-api.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${org.junit.jupiter.junit-jupiter-api}</version>
+            <version>${org.junit.jupiter.junit-jupiter-api.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${ch.qos.logback.logback-classic.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -110,15 +136,58 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${org.apache.maven.plugins.maven-surefire-plugin}</version>
+                    <configuration>
+                        <forkCount>1</forkCount>
+                    </configuration>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>${org.apache.maven.plugins.maven-surefire-plugin}</version>
+                    <configuration>
+                        <forkCount>1</forkCount>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${org.jacoco.jacoco-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <profiles>
@@ -232,8 +301,6 @@
         </profile>
 
     </profiles>
-
-
 
 
 </project>
