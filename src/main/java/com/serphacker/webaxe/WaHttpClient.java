@@ -1,6 +1,8 @@
 package com.serphacker.webaxe;
 
 import com.serphacker.webaxe.requests.PostBodyEntity;
+import com.serphacker.webaxe.routes.WaRoutePlanner;
+import com.serphacker.webaxe.routes.WaRoutes;
 import com.serphacker.webaxe.sockets.PlainSocksConnectionSocketFactory;
 import com.serphacker.webaxe.sockets.SecureConnectionSocketFactory;
 import org.apache.hc.client5.http.StandardMethods;
@@ -38,6 +40,8 @@ public class WaHttpClient implements Closeable {
     BasicHttpClientConnectionManager connectionManager;
     PlainSocksConnectionSocketFactory plainSocketFactory = new PlainSocksConnectionSocketFactory();
     SecureConnectionSocketFactory secureSocketFactory = new SecureConnectionSocketFactory(plainSocketFactory);
+    WaRoutes routes = new WaRoutes();
+    WaRoutePlanner routePlanner = new WaRoutePlanner(routes);
 
     public WaHttpClient() {
 
@@ -51,7 +55,7 @@ public class WaHttpClient implements Closeable {
 
         client = HttpClients
             .custom()
-            //.setRoutePlanner(this.new SCliHttpRoutePlanner())
+            .setRoutePlanner(routePlanner)
             //.setDefaultCredentialsProvider(this)
             .setDefaultCookieStore(cookies.store)
             //.setConnectionReuseStrategy(this.new SCliConnectionReuseStrategy())
@@ -67,6 +71,8 @@ public class WaHttpClient implements Closeable {
     public WaHttpConfig config() {
         return config;
     }
+
+    public WaRoutes routes() {return routes;}
 
     WaHttpResponse doGet(String uri) {
         return doGet(uri, null);
@@ -139,7 +145,7 @@ public class WaHttpClient implements Closeable {
     public WaHttpResponse doRequest(ClassicHttpRequest request, HttpClientContext context) {
         WaHttpResponse response = new WaHttpResponse();
 
-        initializeClient();
+        reInitializeClient();
         initializeRequest(request, context);
 
         try {
@@ -159,7 +165,7 @@ public class WaHttpClient implements Closeable {
         return response;
     }
 
-    protected void initializeClient() {
+    protected void reInitializeClient() {
         connectionManager.setSocketConfig(SocketConfig.custom().setSoTimeout(Timeout.ofMillis(config.timeoutMilli)).build());
         secureSocketFactory.setTrustAllSsl(config.isTrustAllSsl());
     }

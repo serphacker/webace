@@ -6,6 +6,7 @@ import org.apache.hc.client5.http.RedirectException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.cookie.Cookie;
 import org.apache.hc.client5.http.impl.cookie.BasicClientCookie;
+import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -304,6 +305,19 @@ class WaHttpClientIT {
         assertNotEquals(-1, response.code());
         assertNull(response.getException());
         assertTrue(response.text().length() > 0);
+    }
+
+    @Test
+    public void route() {
+        WaHttpResponse response;
+        var cli = new WaHttpClient();
+
+        cli.routes().set("www.google.com", httpBinDomain);
+
+        response = cli.doGet("http://www.google.com/get");
+        assertEquals(200, response.code());
+        assertTrue(response.text().contains("\"args\": {}"));
+
     }
 
 }
