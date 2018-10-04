@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,7 +36,7 @@ class WaHttpClientIT {
         WaHttpClient client = new WaHttpClient();
         final WaHttpResponse response = client.doGet(httpBinUrl + "/get");
         assertEquals(200, response.code());
-        assertTrue(response.getContentAsString().length() > 0);
+        assertTrue(response.text().length() > 0);
     }
 
     @Test
@@ -46,14 +45,14 @@ class WaHttpClientIT {
 
         {
             final WaHttpResponse response = client.doGet(httpBinUrl + "/get");
-            final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+            final JsonNode jsonResponse = JSON.readTree(response.text());
             assertEquals(client.config().getUserAgent(), jsonResponse.at("/headers/User-Agent").asText());
         }
 
         {
             client.config().setUserAgent("bip bop");
             final WaHttpResponse response = client.doGet(httpBinUrl + "/get");
-            final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+            final JsonNode jsonResponse = JSON.readTree(response.text());
             assertEquals("bip bop", jsonResponse.at("/headers/User-Agent").asText());
         }
 
@@ -61,20 +60,20 @@ class WaHttpClientIT {
             HttpGet req = new HttpGet(httpBinUrl + "/get");
             req.setHeader("user-agent", "xxxx");
             final WaHttpResponse response = client.doRequest(req);
-            final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+            final JsonNode jsonResponse = JSON.readTree(response.text());
             assertEquals("xxxx", jsonResponse.at("/headers/User-Agent").asText());
         }
 
         {
             final WaHttpResponse response = client.doGet(httpBinUrl + "/get");
-            final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+            final JsonNode jsonResponse = JSON.readTree(response.text());
             assertEquals("bip bop", jsonResponse.at("/headers/User-Agent").asText());
         }
 
         {
             client.config().setUserAgent(null);
             final WaHttpResponse response = client.doGet(httpBinUrl + "/get");
-            final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+            final JsonNode jsonResponse = JSON.readTree(response.text());
             assertEquals("", jsonResponse.at("/headers/User-Agent").asText());
         }
 
@@ -88,27 +87,27 @@ class WaHttpClientIT {
 
         client.config().defaultHeaders().add("X-Header-1", "h1.v1");
         response = client.doGet(httpBinUrl + "/get");
-        jsonResponse = JSON.readTree(response.getContentAsString());
+        jsonResponse = JSON.readTree(response.text());
         assertEquals("h1.v1", jsonResponse.at("/headers/X-Header-1").asText());
 
         client.config().defaultHeaders().add("X-Header-1", "h1.v2");
         client.config().defaultHeaders().add("X-Header-2", "h2.v1");
         response = client.doGet(httpBinUrl + "/get");
-        jsonResponse = JSON.readTree(response.getContentAsString());
+        jsonResponse = JSON.readTree(response.text());
         assertEquals("h1.v1,h1.v2", jsonResponse.at("/headers/X-Header-1").asText());
         assertEquals("h2.v1", jsonResponse.at("/headers/X-Header-2").asText());
 
         HttpGet req = new HttpGet(httpBinUrl + "/get");
         req.addHeader(new BasicHeader("X-Header-3", "h3.v1"));
         response = client.doRequest(req);
-        jsonResponse = JSON.readTree(response.getContentAsString());
+        jsonResponse = JSON.readTree(response.text());
         assertEquals("h1.v1,h1.v2", jsonResponse.at("/headers/X-Header-1").asText());
         assertEquals("h2.v1", jsonResponse.at("/headers/X-Header-2").asText());
         assertEquals("h3.v1", jsonResponse.at("/headers/X-Header-3").asText());
 
         client.config().defaultHeaders().clear();
         response = client.doGet(httpBinUrl + "/get");
-        jsonResponse = JSON.readTree(response.getContentAsString());
+        jsonResponse = JSON.readTree(response.text());
         assertTrue(jsonResponse.at("/headers/X-Header-1").isMissingNode());
         assertTrue(jsonResponse.at("/headers/X-Header-2").isMissingNode());
         assertTrue(jsonResponse.at("/headers/X-Header-3").isMissingNode());
@@ -124,11 +123,11 @@ class WaHttpClientIT {
         cli.doGet(httpBinUrl + "/cookies/set?testcookie1=value1");
 
         response = cli.doGet(httpBinUrl + "/cookies");
-        jsonResponse = JSON.readTree(response.getContentAsString());
+        jsonResponse = JSON.readTree(response.text());
         assertEquals("value1", jsonResponse.at("/cookies/testcookie1").asText());
 
         response = cli.doGet(httpBinUrl + "/cookies");
-        jsonResponse = JSON.readTree(response.getContentAsString());
+        jsonResponse = JSON.readTree(response.text());
         assertEquals("value1", jsonResponse.at("/cookies/testcookie1").asText());
 
         final List<Cookie> cookies = cli.cookies().list();
@@ -139,14 +138,14 @@ class WaHttpClientIT {
         assertTrue(cli.cookies().list().isEmpty());
 
         response = cli.doGet(httpBinUrl + "/cookies");
-        jsonResponse = JSON.readTree(response.getContentAsString());
+        jsonResponse = JSON.readTree(response.text());
         assertTrue(jsonResponse.at("/cookies/testcookie1").isMissingNode());
 
         final BasicClientCookie cookie = new BasicClientCookie("forcedcookie", "forcedvalue");
         cookie.setDomain(httpBinDomain);
         cli.cookies().add(cookie);
         response = cli.doGet(httpBinUrl + "/cookies");
-        jsonResponse = JSON.readTree(response.getContentAsString());
+        jsonResponse = JSON.readTree(response.text());
         assertEquals("forcedvalue", jsonResponse.at("/cookies/forcedcookie").asText());
     }
 
@@ -216,23 +215,23 @@ class WaHttpClientIT {
         cli.config().setMaxResponseLength(2048);
         response = cli.doGet(uri + "1024");
         assertEquals(200, response.code());
-        assertEquals(1024, response.getContent().length);
+        assertEquals(1024, response.data().length);
         assertNull(response.getException());
 
         cli.config.setMaxResponseLength(1024);
         response = cli.doGet(uri + "1024");
         assertEquals(200, response.code());
-        assertEquals(1024, response.getContent().length);
+        assertEquals(1024, response.data().length);
         assertNull(response.getException());
 
         response = cli.doGet(uri + "1025");
         assertEquals(-1, response.code());
-        assertNull(response.getContent());
+        assertNull(response.data());
         assertTrue(response.getException() instanceof IOException);
 
         response = cli.doGet(uri + "1024");
         assertEquals(200, response.code());
-        assertEquals(1024, response.getContent().length);
+        assertEquals(1024, response.data().length);
         assertNull(response.getException());
     }
 
@@ -253,7 +252,7 @@ class WaHttpClientIT {
         WaHttpClient cli = new WaHttpClient();
 
         final WaHttpResponse response = cli.doGet(httpBinUrl + "/get");
-        final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+        final JsonNode jsonResponse = JSON.readTree(response.text());
 
         String supportedEncoding = jsonResponse.at("/headers/Accept-Encoding").asText();
 
@@ -267,7 +266,7 @@ class WaHttpClientIT {
         WaHttpClient cli = new WaHttpClient();
 
         final WaHttpResponse response = cli.doGet(httpBinUrl + "/gzip");
-        final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+        final JsonNode jsonResponse = JSON.readTree(response.text());
 
         assertTrue(jsonResponse.get("gzipped").asBoolean(), "should be gzipped");
     }
@@ -277,7 +276,7 @@ class WaHttpClientIT {
         WaHttpClient cli = new WaHttpClient();
 
         final WaHttpResponse response = cli.doGet(httpBinUrl + "/deflate");
-        final JsonNode jsonResponse = JSON.readTree(response.getContentAsString());
+        final JsonNode jsonResponse = JSON.readTree(response.text());
 
         assertTrue(jsonResponse.get("deflated").asBoolean(), "should be deflated");
     }

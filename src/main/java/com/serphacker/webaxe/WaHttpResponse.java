@@ -16,7 +16,7 @@ public class WaHttpResponse {
     HttpClientContext context;
     long executionTimeMilli;
     Exception exception;
-    byte[] content;
+    byte[] data;
 
     public HttpResponse getHttpResponse() {
         return httpResponse;
@@ -42,12 +42,12 @@ public class WaHttpResponse {
         return httpResponse.getCode();
     }
 
-    public byte[] getContent() {
-        return content;
+    public byte[] data() {
+        return data;
     }
 
     public void setContent(byte[] content) {
-        this.content = content;
+        this.data = content;
     }
 
     public Exception getException() {
@@ -96,8 +96,8 @@ public class WaHttpResponse {
         return header.getValue();
     }
 
-    public String getContentAsString() {
-        if (content == null) {
+    public String text() {
+        if (data == null) {
             return null;
         }
 
@@ -107,7 +107,7 @@ public class WaHttpResponse {
             charset = Charset.forName("UTF-8");
         }
 
-        return new String(content, charset);
+        return new String(data, charset);
     }
 
     public Charset getDetectedCharset() {
@@ -142,12 +142,12 @@ public class WaHttpResponse {
 
     final static Pattern pcharset = Pattern.compile("charset=['\"]?([^\"'\\s]+)");
     protected Charset detectCharsetFromHtmlMeta() {
-        if (content == null) {
+        if (data == null) {
             return null;
         }
 
-        int len = content.length > 4096 ? 4096 : content.length;
-        Matcher matcher = pcharset.matcher(new ByteCharSequence(content, 0, len));
+        int len = data.length > 4096 ? 4096 : data.length;
+        Matcher matcher = pcharset.matcher(new String(data, 0, len));
         if (matcher.find()) {
             try {
                 return Charset.forName(matcher.group(1));

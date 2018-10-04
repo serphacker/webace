@@ -1,6 +1,11 @@
 package com.serphacker.webaxe;
 
+import com.serphacker.webaxe.requests.PostBodyEntity;
+import com.serphacker.webaxe.sockets.PlainSocksConnectionSocketFactory;
+import com.serphacker.webaxe.sockets.SecureConnectionSocketFactory;
+import org.apache.hc.client5.http.StandardMethods;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -18,7 +23,9 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class WaHttpClient implements Closeable {
@@ -62,13 +69,76 @@ public class WaHttpClient implements Closeable {
         return config;
     }
 
-    public WaHttpResponse doGet(String url) {
-        return doRequest(new HttpGet(url));
+    WaHttpResponse doGet(String uri) {
+        return doGet(uri, null);
+    }
+
+    WaHttpResponse doGet(String uri, List<Header> headers) {
+        return doRequest(StandardMethods.GET.name(), uri, headers);
+    }
+
+    WaHttpResponse doDelete(String uri) {
+        return doDelete(uri, null);
+    }
+
+    WaHttpResponse doDelete(String uri, List<Header> headers) {
+        return doRequest(StandardMethods.DELETE.name(), uri, headers);
+    }
+
+    WaHttpResponse doPost(String uri, PostBodyEntity body) {
+        return doPost(uri, body, null);
+    }
+
+    WaHttpResponse doPost(String uri, PostBodyEntity body, List<Header> headers) {
+        return doRequest(StandardMethods.POST.name(), uri, body, headers);
+    }
+
+    WaHttpResponse doPut(String uri, PostBodyEntity body) {
+        return doPut(uri, body, null);
+    }
+
+    WaHttpResponse doPut(String uri, PostBodyEntity body, List<Header> headers) {
+        return doRequest(StandardMethods.PUT.name(), uri, body, headers);
+    }
+
+    WaHttpResponse doPatch(String uri, PostBodyEntity body) {
+        return doPatch(uri, body, null);
+    }
+
+    WaHttpResponse doPatch(String uri, PostBodyEntity body, List<Header> headers) {
+        return doRequest(StandardMethods.PATCH.name(), uri, body, headers);
+    }
+
+    WaHttpResponse doRequest(String verb, String uri, List<Header> headers) {
+        return doRequest(verb, uri, (HttpEntity) null, headers);
+    }
+
+    WaHttpResponse doRequest(String verb, String uri, PostBodyEntity body, List<Header> headers) {
+        return doRequest(verb, uri, body != null ? body.getHttpEntity() : null, headers);
+    }
+
+    WaHttpResponse doRequest(String verb, String uri, HttpEntity body, List<Header> headers) {
+        HttpUriRequestBase request = new HttpUriRequestBase(verb, URI.create(uri));
+
+        if (body != null) {
+            request.setEntity(body);
+        }
+
+        if (headers != null) {
+            for (var requestHeader : headers) {
+                request.addHeader(requestHeader);
+            }
+        }
+
+        return doRequest(request);
     }
 
     public WaHttpResponse doRequest(ClassicHttpRequest request) {
+        return doRequest(request, HttpClientContext.create());
+    }
+
+    public WaHttpResponse doRequest(ClassicHttpRequest request, HttpClientContext context) {
         WaHttpResponse response = new WaHttpResponse();
-        HttpClientContext context = HttpClientContext.create();
 
         initializeClient();
         initializeRequest(request, context);

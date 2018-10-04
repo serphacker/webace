@@ -62,19 +62,19 @@ class WaHttpResponseTest {
     public void detectCharsetFromHtmlMeta(){
         WaHttpResponse response = new WaHttpResponse();
 
-        response.content = "qdsfqsdf<meta charset=\"utf-8\" />qsdfs".getBytes();
+        response.data = "qdsfqsdf<meta charset=\"utf-8\" />qsdfs".getBytes();
         assertEquals(StandardCharsets.UTF_8, response.detectCharsetFromHtmlMeta());
 
-        response.content = "http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />".getBytes();
+        response.data = "http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />".getBytes();
         assertEquals(StandardCharsets.UTF_8, response.detectCharsetFromHtmlMeta());
 
-        response.content = "qdsfqsdf<meta charset=\"iso-8859-1\" />qsdfs".getBytes();
+        response.data = "qdsfqsdf<meta charset=\"iso-8859-1\" />qsdfs".getBytes();
         assertEquals(StandardCharsets.ISO_8859_1, response.detectCharsetFromHtmlMeta());
 
-        response.content = "http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\" />".getBytes();
+        response.data = "http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\" />".getBytes();
         assertEquals(StandardCharsets.ISO_8859_1, response.detectCharsetFromHtmlMeta());
 
-        response.content = "http-equiv=\"Content-Type\" content=\"text/html; charset=xxx\" />".getBytes();
+        response.data = "http-equiv=\"Content-Type\" content=\"text/html; charset=xxx\" />".getBytes();
         assertNull(response.detectCharsetFromHtmlMeta());
     }
 
