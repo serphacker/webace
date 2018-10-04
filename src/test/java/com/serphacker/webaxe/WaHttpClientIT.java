@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -117,7 +118,7 @@ class WaHttpClientIT {
     public void cookies() throws Exception {
         WaHttpResponse response;
         JsonNode jsonResponse;
-        WaHttpClient cli = new WaHttpClient();
+        var cli = new WaHttpClient();
 
 
         cli.doGet(httpBinUrl + "/cookies/set?testcookie1=value1");
@@ -152,7 +153,7 @@ class WaHttpClientIT {
     @Test
     public void redirects() {
         WaHttpResponse response;
-        WaHttpClient cli = new WaHttpClient();
+        var cli = new WaHttpClient();
 
         // don't follow redirect by default
         assertEquals(302, cli.doGet(httpBinUrl + "/redirect/1").code());
@@ -181,7 +182,7 @@ class WaHttpClientIT {
     @Test
     public void testGetLastRedirect() {
         WaHttpResponse response;
-        WaHttpClient cli = new WaHttpClient();
+        var cli = new WaHttpClient();
 
         cli.config().followRedirect(10);
         response = cli.doGet(httpBinUrl + "/redirect/2");
@@ -210,7 +211,7 @@ class WaHttpClientIT {
 
     public void maxResponseLength(String uri) {
         WaHttpResponse response;
-        WaHttpClient cli = new WaHttpClient();
+        var cli = new WaHttpClient();
 
         cli.config().setMaxResponseLength(2048);
         response = cli.doGet(uri + "1024");
@@ -237,7 +238,7 @@ class WaHttpClientIT {
 
     @Test
     public void keepAlive() {
-        WaHttpClient cli = new WaHttpClient();
+        var cli = new WaHttpClient();
 
         cli.doGet(httpBinUrl + "/headers");
         cli.doGet(httpBinUrl + "/headers");
@@ -248,8 +249,8 @@ class WaHttpClientIT {
 
 
     @Test
-    public void testSupportedEncoding() throws Exception {
-        WaHttpClient cli = new WaHttpClient();
+    public void supportedEncoding() throws Exception {
+        var cli = new WaHttpClient();
 
         final WaHttpResponse response = cli.doGet(httpBinUrl + "/get");
         final JsonNode jsonResponse = JSON.readTree(response.text());
@@ -262,8 +263,8 @@ class WaHttpClientIT {
 
 
     @Test
-    public void testGzip() throws Exception {
-        WaHttpClient cli = new WaHttpClient();
+    public void encodingGzip() throws Exception {
+        var cli = new WaHttpClient();
 
         final WaHttpResponse response = cli.doGet(httpBinUrl + "/gzip");
         final JsonNode jsonResponse = JSON.readTree(response.text());
@@ -272,13 +273,37 @@ class WaHttpClientIT {
     }
 
     @Test
-    public void testDefalte() throws Exception {
-        WaHttpClient cli = new WaHttpClient();
+    public void encodingDefalte() throws Exception {
+        var cli = new WaHttpClient();
 
         final WaHttpResponse response = cli.doGet(httpBinUrl + "/deflate");
         final JsonNode jsonResponse = JSON.readTree(response.text());
 
         assertTrue(jsonResponse.get("deflated").asBoolean(), "should be deflated");
+    }
+
+    @Test
+    public void ssl() {
+        var cli = new WaHttpClient();
+
+        final WaHttpResponse response = cli.doGet("https://www.google.com");
+        assertEquals(200, response.code());
+    }
+
+    @Test
+    public void trustAllSsl() {
+        WaHttpResponse response;
+        var cli = new WaHttpClient();
+
+        response = cli.doGet("https://163.172.230.186");
+        assertEquals(-1, response.code());
+        assertTrue(response.getException() instanceof javax.net.ssl.SSLPeerUnverifiedException);
+
+        cli.config().setTrustAllSsl(true);
+        response = cli.doGet("https://163.172.230.186");
+        assertNotEquals(-1, response.code());
+        assertNull(response.getException());
+        assertTrue(response.text().length() > 0);
     }
 
 }
