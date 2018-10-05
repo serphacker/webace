@@ -6,6 +6,31 @@ services:
       webace_net:
         ipv4_address: 172.29.1.1
 
+  squid:
+    image: sameersbn/squid:3.5.27
+    volumes:
+    - ./squid/squid.conf:/etc/squid/squid.conf:ro
+    networks:
+      webace_net:
+        ipv4_address: 172.29.1.2
+
+  socks:
+    image: serjs/go-socks5-proxy
+    volumes:
+    - ./squid/squid.conf:/etc/squid/squid.conf:ro
+    networks:
+      webace_net:
+        ipv4_address: 172.29.1.3
+
+#  squid_auth:
+#    image: sameersbn/squid
+#    volumes:
+#    - ./squid/squid-auth.conf:/etc/squid/squid.conf:ro
+#    - ./squid/passwords:/etc/squid3/passwords:ro
+#    networks:
+#      webace_net:
+#        ipv4_address: 172.29.1.3
+
 networks:
   webace_net:
     ipam:
