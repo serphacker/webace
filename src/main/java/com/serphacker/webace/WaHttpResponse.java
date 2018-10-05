@@ -12,6 +12,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WaHttpResponse {
+
+    final static Pattern HTML_CHARSET_PATTERN = Pattern.compile("charset=['\"]?([^\"'\\s]+)");
+
     HttpResponse httpResponse;
     HttpClientContext context;
     long executionTimeMilli;
@@ -140,18 +143,18 @@ public class WaHttpResponse {
         }
     }
 
-    final static Pattern pcharset = Pattern.compile("charset=['\"]?([^\"'\\s]+)");
     protected Charset detectCharsetFromHtmlMeta() {
         if (data == null) {
             return null;
         }
 
         int len = data.length > 4096 ? 4096 : data.length;
-        Matcher matcher = pcharset.matcher(new String(data, 0, len));
+        Matcher matcher = HTML_CHARSET_PATTERN.matcher(new String(data, 0, len));
         if (matcher.find()) {
             try {
                 return Charset.forName(matcher.group(1));
             } catch (Exception ex) {
+                return null;
             }
         }
 

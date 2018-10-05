@@ -91,11 +91,11 @@ public class MultiPartBody implements PostBodyEntity  {
         }
     }
 
+    HttpEntity entity;
+
     private MultiPartBody(HttpEntity entity) {
         this.entity = entity;
     }
-
-    HttpEntity entity;
 
     @Override
     public HttpEntity getHttpEntity() {
