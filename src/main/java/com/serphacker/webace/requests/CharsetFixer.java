@@ -1,4 +1,4 @@
-package com.serphacker.webaxe.requests;
+package com.serphacker.webace.requests;
 
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;

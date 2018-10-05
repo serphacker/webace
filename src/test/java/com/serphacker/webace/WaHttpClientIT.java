@@ -1,4 +1,4 @@
-package com.serphacker.webaxe;
+package com.serphacker.webace;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -319,5 +319,13 @@ class WaHttpClientIT {
         assertTrue(response.text().contains("\"args\": {}"));
 
     }
+
+//    @Test
+//    public void testCredential() {
+//        var cli = new WaHttpClient();
+//
+//        WaHttpResponse response = cli.doGet(httpBinUrl + "/basic-auth/user/pass");
+//        assertEquals(200, response.code());
+//    }
 
 }

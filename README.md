@@ -1,14 +1,17 @@
-# WebAxe java HTTP client [![build status](https://gitlab.com/serphacker/webaxe/badges/master/pipeline.svg)](https://gitlab.com/serphacker/webaxe/commits/master) [![coverage report](https://gitlab.com/serphacker/webaxe/badges/master/coverage.svg)](https://gitlab.com/serphacker/webaxe/commits/master)
+# WebAxe java HTTP client 
 
-[WebAxe is a java HTTP client](https://gitlab.com/serphacker/webaxe) for web scraping with great proxy support based on [Apache HttpComponents](https://hc.apache.org/index.html). 
+[![build status](https://gitlab.com/serphacker/webace/badges/master/pipeline.svg)](https://gitlab.com/serphacker/webace/commits/master) 
+[![coverage report](https://gitlab.com/serphacker/webace/badges/master/coverage.svg)](https://gitlab.com/serphacker/webace/commits/master)
 
-Homepage :  https://gitlab.com/serphacker/webaxe
+WebAce is a java HTTP client for web scraping with great proxy support based on [Apache HttpComponents](https://hc.apache.org/index.html). 
 
-Issues and bug report : https://gitlab.com/serphacker/webaxe/issues
+Homepage :  https://gitlab.com/serphacker/webace
+
+Issues and bug report : https://gitlab.com/serphacker/webace/issues
 
 Features : 
 
-* Designed for web scraping, link building and form submission
+* Designed for web scraping, form submission and web automation (bots, link building, etc.)
 * Support for HTTP and Socks proxy with authentication
 * Support multiple sources IP (BindProxy)
 * Proxy rotation
@@ -26,8 +29,8 @@ Features :
  
  ```xml
 <dependency>
-  <groupId>com.serphacker.webaxe</groupId>
-  <artifactId>webaxe</artifactId>
+  <groupId>com.serphacker.webace</groupId>
+  <artifactId>webace</artifactId>
   <version>LATEST</version>
 </dependency>
 ```
@@ -35,7 +38,7 @@ Features :
 Gradle:
 
 ```text
-compile 'com.serphacker.webaxe:webaxe:LATEST'
+compile 'com.serphacker.webace:webace:LATEST'
 ```
  
  ## Usage

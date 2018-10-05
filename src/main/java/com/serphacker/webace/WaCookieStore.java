@@ -1,4 +1,4 @@
-package com.serphacker.webaxe;
+package com.serphacker.webace;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;

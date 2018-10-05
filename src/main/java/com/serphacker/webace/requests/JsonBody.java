@@ -1,4 +1,4 @@
-package com.serphacker.webaxe.requests;
+package com.serphacker.webace.requests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

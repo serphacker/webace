@@ -1,4 +1,4 @@
-package com.serphacker.webaxe;
+package com.serphacker.webace;
 
 public class WaHttpConfig {
 

@@ -1,4 +1,4 @@
-package com.serphacker.webaxe.sockets;
+package com.serphacker.webace.sockets;
 
 import org.apache.hc.client5.http.ConnectTimeoutException;
 import org.apache.hc.client5.http.socket.ConnectionSocketFactory;

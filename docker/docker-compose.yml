@@ -3,11 +3,11 @@ services:
   httpbin:
     image: kennethreitz/httpbin
     networks:
-      webaxe_net:
+      webace_net:
         ipv4_address: 172.29.1.1
 
 networks:
-  webaxe_net:
+  webace_net:
     ipam:
       driver: default
       config:

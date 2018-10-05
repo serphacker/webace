@@ -1,4 +1,4 @@
-package com.serphacker.webaxe;
+package com.serphacker.webace;
 
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.protocol.RedirectLocations;

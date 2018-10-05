@@ -1,4 +1,4 @@
-package com.serphacker.webaxe.requests;
+package com.serphacker.webace.requests;
 
 import org.apache.hc.core5.http.HttpEntity;
 import org.junit.jupiter.api.Test;

@@ -1,11 +1,11 @@
-package com.serphacker.webaxe;
+package com.serphacker.webace;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.serphacker.webaxe.requests.FormBody;
-import com.serphacker.webaxe.requests.JsonBody;
-import com.serphacker.webaxe.requests.MultiPartBody;
-import com.serphacker.webaxe.requests.PostBodyEntity;
+import com.serphacker.webace.requests.FormBody;
+import com.serphacker.webace.requests.JsonBody;
+import com.serphacker.webace.requests.MultiPartBody;
+import com.serphacker.webace.requests.PostBodyEntity;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.entity.mime.InputStreamBody;
 import org.apache.hc.core5.http.Header;

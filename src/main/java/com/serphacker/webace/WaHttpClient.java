@@ -1,13 +1,16 @@
-package com.serphacker.webaxe;
+package com.serphacker.webace;
 
-import com.serphacker.webaxe.requests.PostBodyEntity;
-import com.serphacker.webaxe.routes.WaRoutePlanner;
-import com.serphacker.webaxe.routes.WaRoutes;
-import com.serphacker.webaxe.sockets.PlainSocksConnectionSocketFactory;
-import com.serphacker.webaxe.sockets.SecureConnectionSocketFactory;
+import com.serphacker.webace.proxy.DirectNoProxy;
+import com.serphacker.webace.proxy.WaProxy;
+import com.serphacker.webace.requests.PostBodyEntity;
+import com.serphacker.webace.routes.WaRoutePlanner;
+import com.serphacker.webace.routes.WaRoutes;
+import com.serphacker.webace.sockets.PlainSocksConnectionSocketFactory;
+import com.serphacker.webace.sockets.SecureConnectionSocketFactory;
 import org.apache.hc.client5.http.StandardMethods;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -35,12 +38,16 @@ public class WaHttpClient implements Closeable {
 
     WaCookieStore cookies = new WaCookieStore();
     WaHttpConfig config = new WaHttpConfig();
+    WaRoutes routes = new WaRoutes();
+    WaProxy proxy = DirectNoProxy.INSTANCE;
+    WaProxy previousProxy = DirectNoProxy.INSTANCE;
+
 
     CloseableHttpClient client;
     BasicHttpClientConnectionManager connectionManager;
     PlainSocksConnectionSocketFactory plainSocketFactory = new PlainSocksConnectionSocketFactory();
     SecureConnectionSocketFactory secureSocketFactory = new SecureConnectionSocketFactory(plainSocketFactory);
-    WaRoutes routes = new WaRoutes();
+
     WaRoutePlanner routePlanner = new WaRoutePlanner(routes);
 
     public WaHttpClient() {
@@ -56,7 +63,7 @@ public class WaHttpClient implements Closeable {
         client = HttpClients
             .custom()
             .setRoutePlanner(routePlanner)
-            //.setDefaultCredentialsProvider(this)
+            .setDefaultCredentialsProvider(new BasicCredentialsProvider())
             .setDefaultCookieStore(cookies.store)
             //.setConnectionReuseStrategy(this.new SCliConnectionReuseStrategy())
             .setConnectionManager(connectionManager)
@@ -147,6 +154,7 @@ public class WaHttpClient implements Closeable {
 
         reInitializeClient();
         initializeRequest(request, context);
+        context.setAttribute(WaHttpContexts.WEBAXE_PROXY, proxy);
 
         try {
             response.executionTimerStart();
@@ -168,6 +176,9 @@ public class WaHttpClient implements Closeable {
     protected void reInitializeClient() {
         connectionManager.setSocketConfig(SocketConfig.custom().setSoTimeout(Timeout.ofMillis(config.timeoutMilli)).build());
         secureSocketFactory.setTrustAllSsl(config.isTrustAllSsl());
+        if(!proxy.equals(previousProxy)) {
+            closeConnection();
+        }
     }
 
     protected void initializeRequest(HttpRequest request, HttpClientContext context) {
@@ -219,6 +230,17 @@ public class WaHttpClient implements Closeable {
 
     public void closeConnection() {
         connectionManager.closeIdle(0, TimeUnit.NANOSECONDS);
+    }
+
+    public WaProxy getProxy() {
+        return proxy;
+    }
+
+    public void setProxy(WaProxy proxy) {
+        this.previousProxy = this.proxy;
+        this.proxy = proxy;
+
+        // TODO: store credentials
     }
 
     @Override

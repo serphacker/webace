@@ -1,4 +1,4 @@
-package com.serphacker.webaxe.requests;
+package com.serphacker.webace.requests;
 
 import org.apache.hc.client5.http.entity.mime.ContentBody;
 import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;

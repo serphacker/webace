@@ -4,14 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.serphacker.webaxe</groupId>
-    <artifactId>webaxe</artifactId>
+    <groupId>com.serphacker.webace</groupId>
+    <artifactId>webace</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>webaxe</name>
+    <name>webace</name>
     <description>An open source HTTP client for web scraping</description>
-    <url>https://gitlab.com/serphacker/webaxe</url>
+    <url>https://gitlab.com/serphacker/webace</url>
 
     <licenses>
         <license>
@@ -22,7 +22,7 @@
     </licenses>
 
     <scm>
-        <url>https://gitlab.com/serphacker/webaxe</url>
+        <url>https://gitlab.com/serphacker/webace</url>
     </scm>
 
     <developers>

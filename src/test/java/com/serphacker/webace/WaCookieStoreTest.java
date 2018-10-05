@@ -1,4 +1,4 @@
-package com.serphacker.webaxe;
+package com.serphacker.webace;
 
 import org.apache.hc.client5.http.cookie.Cookie;
 import org.apache.hc.client5.http.impl.cookie.BasicClientCookie;
