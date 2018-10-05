@@ -1,3 +1,11 @@
+/*
+ * WebAce - Java Http Client for webscraping https://gitlab.com/serphacker/webace
+ *
+ * Copyright (c) 2018 SERP Hacker
+ * @author Pierre Nogues <support@serphacker.com>
+ * @license https://opensource.org/licenses/MIT MIT License
+ */
+
 package com.serphacker.webace;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -6,12 +14,10 @@ import com.serphacker.webace.requests.FormBody;
 import com.serphacker.webace.requests.JsonBody;
 import com.serphacker.webace.requests.MultiPartBody;
 import com.serphacker.webace.requests.PostBodyEntity;
-import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.entity.mime.InputStreamBody;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -22,9 +28,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;

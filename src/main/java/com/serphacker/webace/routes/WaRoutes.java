@@ -1,6 +1,12 @@
-package com.serphacker.webace.routes;
+/*
+ * WebAce - Java Http Client for webscraping https://gitlab.com/serphacker/webace
+ *
+ * Copyright (c) 2018 SERP Hacker
+ * @author Pierre Nogues <support@serphacker.com>
+ * @license https://opensource.org/licenses/MIT MIT License
+ */
 
-import org.apache.hc.core5.http.HttpHost;
+package com.serphacker.webace.routes;
 
 import java.util.HashMap;
 import java.util.Map;

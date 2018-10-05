@@ -1,3 +1,11 @@
+/*
+ * WebAce - Java Http Client for webscraping https://gitlab.com/serphacker/webace
+ *
+ * Copyright (c) 2018 SERP Hacker
+ * @author Pierre Nogues <support@serphacker.com>
+ * @license https://opensource.org/licenses/MIT MIT License
+ */
+
 package com.serphacker.webace.requests;
 
 import org.apache.hc.client5.http.entity.mime.ByteArrayBody;
@@ -7,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MultiPartBodyTest {
 

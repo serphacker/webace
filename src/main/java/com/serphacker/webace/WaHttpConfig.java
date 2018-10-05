@@ -1,9 +1,17 @@
+/*
+ * WebAce - Java Http Client for webscraping https://gitlab.com/serphacker/webace
+ *
+ * Copyright (c) 2018 SERP Hacker
+ * @author Pierre Nogues <support@serphacker.com>
+ * @license https://opensource.org/licenses/MIT MIT License
+ */
+
 package com.serphacker.webace;
 
 public class WaHttpConfig {
 
     String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0";
-    long timeoutMilli = 30_000l;
+    long timeoutMilli = 30_000;
     int maxResponseLength = 4_000_000;
     int maxRedirect = 0;
     boolean trustAllSsl = false;

@@ -1,6 +1,13 @@
+/*
+ * WebAce - Java Http Client for webscraping https://gitlab.com/serphacker/webace
+ *
+ * Copyright (c) 2018 SERP Hacker
+ * @author Pierre Nogues <support@serphacker.com>
+ * @license https://opensource.org/licenses/MIT MIT License
+ */
+
 package com.serphacker.webace;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.cookie.Cookie;
 

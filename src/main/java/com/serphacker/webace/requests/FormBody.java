@@ -1,3 +1,11 @@
+/*
+ * WebAce - Java Http Client for webscraping https://gitlab.com/serphacker/webace
+ *
+ * Copyright (c) 2018 SERP Hacker
+ * @author Pierre Nogues <support@serphacker.com>
+ * @license https://opensource.org/licenses/MIT MIT License
+ */
+
 package com.serphacker.webace.requests;
 
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
@@ -53,6 +61,7 @@ public class FormBody implements PostBodyEntity {
     }
 
     UrlEncodedFormEntity entity;
+
     public FormBody(UrlEncodedFormEntity entity) {
         this.entity = entity;
     }
