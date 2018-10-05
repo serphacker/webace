@@ -48,12 +48,12 @@ public class WaRoutePlanner implements HttpRoutePlanner {
             return new HttpRoute(routeHost);
         }
 
-        boolean ssl = "https".equalsIgnoreCase(target.getSchemeName());;
+        boolean ssl = "https".equalsIgnoreCase(target.getSchemeName());
 
         if (proxy instanceof BindProxy) {
             BindProxy bindProxy = (BindProxy) proxy;
             try {
-                return new HttpRoute(target, InetAddress.getByName(bindProxy.ip), ssl);
+                return new HttpRoute(routeHost, InetAddress.getByName(bindProxy.ip), ssl);
             } catch (UnknownHostException cause) {
                 throw new HttpException("invalid bind ip", cause);
             }
@@ -63,7 +63,7 @@ public class WaRoutePlanner implements HttpRoutePlanner {
             HttpProxy httpProxy = (HttpProxy) proxy;
 
             return new HttpRoute(
-                target,
+                routeHost,
                 null,
                 new HttpHost(httpProxy.getIp(), httpProxy.getPort()),
                 ssl,

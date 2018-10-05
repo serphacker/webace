@@ -81,55 +81,55 @@ public class WaHttpClient implements Closeable {
 
     public WaRoutes routes() {return routes;}
 
-    WaHttpResponse doGet(String uri) {
+    public WaHttpResponse doGet(String uri) {
         return doGet(uri, null);
     }
 
-    WaHttpResponse doGet(String uri, List<Header> headers) {
+    public WaHttpResponse doGet(String uri, List<Header> headers) {
         return doRequest(StandardMethods.GET.name(), uri, headers);
     }
 
-    WaHttpResponse doDelete(String uri) {
+    public WaHttpResponse doDelete(String uri) {
         return doDelete(uri, null);
     }
 
-    WaHttpResponse doDelete(String uri, List<Header> headers) {
+    public WaHttpResponse doDelete(String uri, List<Header> headers) {
         return doRequest(StandardMethods.DELETE.name(), uri, headers);
     }
 
-    WaHttpResponse doPost(String uri, PostBodyEntity body) {
+    public WaHttpResponse doPost(String uri, PostBodyEntity body) {
         return doPost(uri, body, null);
     }
 
-    WaHttpResponse doPost(String uri, PostBodyEntity body, List<Header> headers) {
+    public WaHttpResponse doPost(String uri, PostBodyEntity body, List<Header> headers) {
         return doRequest(StandardMethods.POST.name(), uri, body, headers);
     }
 
-    WaHttpResponse doPut(String uri, PostBodyEntity body) {
+    public WaHttpResponse doPut(String uri, PostBodyEntity body) {
         return doPut(uri, body, null);
     }
 
-    WaHttpResponse doPut(String uri, PostBodyEntity body, List<Header> headers) {
+    public WaHttpResponse doPut(String uri, PostBodyEntity body, List<Header> headers) {
         return doRequest(StandardMethods.PUT.name(), uri, body, headers);
     }
 
-    WaHttpResponse doPatch(String uri, PostBodyEntity body) {
+    public WaHttpResponse doPatch(String uri, PostBodyEntity body) {
         return doPatch(uri, body, null);
     }
 
-    WaHttpResponse doPatch(String uri, PostBodyEntity body, List<Header> headers) {
+    public WaHttpResponse doPatch(String uri, PostBodyEntity body, List<Header> headers) {
         return doRequest(StandardMethods.PATCH.name(), uri, body, headers);
     }
 
-    WaHttpResponse doRequest(String verb, String uri, List<Header> headers) {
+    public WaHttpResponse doRequest(String verb, String uri, List<Header> headers) {
         return doRequest(verb, uri, (HttpEntity) null, headers);
     }
 
-    WaHttpResponse doRequest(String verb, String uri, PostBodyEntity body, List<Header> headers) {
+    public WaHttpResponse doRequest(String verb, String uri, PostBodyEntity body, List<Header> headers) {
         return doRequest(verb, uri, body != null ? body.getHttpEntity() : null, headers);
     }
 
-    WaHttpResponse doRequest(String verb, String uri, HttpEntity body, List<Header> headers) {
+    public WaHttpResponse doRequest(String verb, String uri, HttpEntity body, List<Header> headers) {
         HttpUriRequestBase request = new HttpUriRequestBase(verb, URI.create(uri));
 
         if (body != null) {
@@ -237,6 +237,9 @@ public class WaHttpClient implements Closeable {
     }
 
     public void setProxy(WaProxy proxy) {
+        if (proxy == null) {
+            proxy = DirectNoProxy.INSTANCE;
+        }
         this.previousProxy = this.proxy;
         this.proxy = proxy;
 
