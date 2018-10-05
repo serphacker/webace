@@ -7,8 +7,6 @@ import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -18,15 +16,11 @@ import java.net.SocketTimeoutException;
 
 public class PlainSocksConnectionSocketFactory implements ConnectionSocketFactory {
 
-    public final static Logger LOG = LoggerFactory.getLogger(PlainSocksConnectionSocketFactory.class);
-
     @Override
     public Socket createSocket(final HttpContext context) {
         final Object proxy = context.getAttribute(WaHttpContexts.WEBAXE_PROXY);
 
         if (proxy instanceof SocksProxy) {
-            LOG.info("using socks proxy {}", proxy);
-
             final var socksProxy = (SocksProxy) proxy;
             final var address = InetSocketAddress.createUnresolved(socksProxy.getIp(), socksProxy.getPort());
             return new Socket(new Proxy(Proxy.Type.SOCKS, address));

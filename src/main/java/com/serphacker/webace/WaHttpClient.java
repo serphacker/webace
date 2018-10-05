@@ -1,13 +1,14 @@
 package com.serphacker.webace;
 
-import com.serphacker.webace.proxy.DirectNoProxy;
-import com.serphacker.webace.proxy.WaProxy;
+import com.serphacker.webace.proxy.*;
 import com.serphacker.webace.requests.PostBodyEntity;
 import com.serphacker.webace.routes.WaRoutePlanner;
 import com.serphacker.webace.routes.WaRoutes;
 import com.serphacker.webace.sockets.PlainSocksConnectionSocketFactory;
 import com.serphacker.webace.sockets.SecureConnectionSocketFactory;
 import org.apache.hc.client5.http.StandardMethods;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
@@ -47,6 +48,7 @@ public class WaHttpClient implements Closeable {
     BasicHttpClientConnectionManager connectionManager;
     PlainSocksConnectionSocketFactory plainSocketFactory = new PlainSocksConnectionSocketFactory();
     SecureConnectionSocketFactory secureSocketFactory = new SecureConnectionSocketFactory(plainSocketFactory);
+    BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 
     WaRoutePlanner routePlanner = new WaRoutePlanner(routes);
 
@@ -63,9 +65,8 @@ public class WaHttpClient implements Closeable {
         client = HttpClients
             .custom()
             .setRoutePlanner(routePlanner)
-            .setDefaultCredentialsProvider(new BasicCredentialsProvider())
+            .setDefaultCredentialsProvider(credentialsProvider)
             .setDefaultCookieStore(cookies.store)
-            //.setConnectionReuseStrategy(this.new SCliConnectionReuseStrategy())
             .setConnectionManager(connectionManager)
             .build();
 
@@ -79,7 +80,9 @@ public class WaHttpClient implements Closeable {
         return config;
     }
 
-    public WaRoutes routes() {return routes;}
+    public WaRoutes routes() {
+        return routes;
+    }
 
     public WaHttpResponse doGet(String uri) {
         return doGet(uri, null);
@@ -159,7 +162,7 @@ public class WaHttpClient implements Closeable {
         try {
             response.executionTimerStart();
             response.setContext(context);
-            try(CloseableHttpResponse httpResponse = client.execute(request, context)) {
+            try (CloseableHttpResponse httpResponse = client.execute(request, context)) {
                 response.setHttpResponse(httpResponse);
                 final byte[] content = consumeResponse(httpResponse);
                 response.setContent(content);
@@ -176,7 +179,7 @@ public class WaHttpClient implements Closeable {
     protected void reInitializeClient() {
         connectionManager.setSocketConfig(SocketConfig.custom().setSoTimeout(Timeout.ofMillis(config.timeoutMilli)).build());
         secureSocketFactory.setTrustAllSsl(config.isTrustAllSsl());
-        if(!proxy.equals(previousProxy)) {
+        if (!proxy.equals(previousProxy)) {
             closeConnection();
         }
     }
@@ -202,7 +205,7 @@ public class WaHttpClient implements Closeable {
     }
 
     protected byte[] consumeResponse(CloseableHttpResponse response) throws IOException {
-        try(HttpEntity entity = response.getEntity()) {
+        try (HttpEntity entity = response.getEntity()) {
             long contentLength = entity.getContentLength();
 
             if (contentLength > config.getMaxResponseLength()) {
@@ -243,7 +246,24 @@ public class WaHttpClient implements Closeable {
         this.previousProxy = this.proxy;
         this.proxy = proxy;
 
-        // TODO: store credentials
+        if (proxy instanceof AuthentProxy && ((AuthentProxy) proxy).hasCredentials()) {
+
+            if (proxy instanceof HttpProxy) {
+                final var scope = new AuthScope(((HttpProxy) proxy).getIp(), ((HttpProxy) proxy).getPort());
+                final var credentials = new UsernamePasswordCredentials(
+                    ((AuthentProxy) proxy).getUsername(),
+                    ((AuthentProxy) proxy).getPassword().toCharArray()
+                );
+                credentialsProvider.setCredentials(scope, credentials);
+            }
+
+            if (proxy instanceof SocksProxy) {
+                SocksAuthenticator.INSTANCE.addSocksWithCredentials((SocksProxy) proxy);
+            }
+
+
+        }
+
     }
 
     @Override

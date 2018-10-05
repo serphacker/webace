@@ -17,21 +17,45 @@ class HttpProxyIT {
 
     String httpBinDomain = System.getProperty("httpBinDomain");
     String httpBinUrl = "http://" + httpBinDomain;
-    String squid_1_ip = "172.29.1.2";
 
     @Test
     @EnabledIfSystemProperty(named = "test.service-backend", matches = "docker-compose")
     public void httpProxy() throws IOException {
+        String squidIp = "172.29.1.2";
         WaHttpResponse response;
         var client = new WaHttpClient();
 
-        client.setProxy(new HttpProxy(squid_1_ip, 3128));
+        client.setProxy(new HttpProxy(squidIp, 3128));
         response = client.doGet(httpBinUrl + "/ip");
-        assertEquals(squid_1_ip, JSON.readTree(response.text()).get("origin").asText());
+        assertEquals(200, response.code());
+        assertEquals(squidIp, JSON.readTree(response.text()).get("origin").asText());
 
         client.setProxy(DirectNoProxy.INSTANCE);
         response = client.doGet(httpBinUrl + "/ip");
-        assertNotEquals(squid_1_ip, JSON.readTree(response.text()).get("origin").asText());
+        assertEquals(200, response.code());
+        assertNotEquals(squidIp, JSON.readTree(response.text()).get("origin").asText());
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.service-backend", matches = "docker-compose")
+    public void httpProxyAuth() throws IOException {
+        String squidAuthIp = "172.29.1.4";
+        WaHttpResponse response;
+        var client = new WaHttpClient();
+
+        client.setProxy(new HttpProxy(squidAuthIp, 3128));
+        response = client.doGet(httpBinUrl + "/ip");
+        assertEquals(407, response.code());
+
+        client.setProxy(new HttpProxy(squidAuthIp, 3128, "user", "pass"));
+        response = client.doGet(httpBinUrl + "/ip");
+        assertEquals(200, response.code());
+        assertEquals(squidAuthIp, JSON.readTree(response.text()).get("origin").asText());
+
+        client.setProxy(DirectNoProxy.INSTANCE);
+        response = client.doGet(httpBinUrl + "/ip");
+        assertEquals(200, response.code());
+        assertNotEquals(squidAuthIp, JSON.readTree(response.text()).get("origin").asText());
     }
 
 }

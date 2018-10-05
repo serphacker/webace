@@ -17,11 +17,11 @@ class SocksProxyIT {
 
     String httpBinDomain = System.getProperty("httpBinDomain");
     String httpBinUrl = "http://" + httpBinDomain;
-    String socksIp = "172.29.1.3";
 
     @Test
     @EnabledIfSystemProperty(named = "test.service-backend", matches = "docker-compose")
     public void socksProxy() throws IOException {
+        String socksIp = "172.29.1.3";
         WaHttpResponse response;
         var client = new WaHttpClient();
 
@@ -32,6 +32,28 @@ class SocksProxyIT {
         client.setProxy(DirectNoProxy.INSTANCE);
         response = client.doGet(httpBinUrl + "/ip");
         assertNotEquals(socksIp, JSON.readTree(response.text()).get("origin").asText());
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "test.service-backend", matches = "docker-compose")
+    public void socksProxyAuth() throws IOException {
+        String socksAuthIp = "172.29.1.5";
+        WaHttpResponse response;
+        var client = new WaHttpClient();
+
+        client.setProxy(new SocksProxy(socksAuthIp, 1080));
+        response = client.doGet(httpBinUrl + "/ip");
+        assertNotEquals(200, response.code());
+
+        client.setProxy(new SocksProxy(socksAuthIp, 1080, "user", "pass"));
+        response = client.doGet(httpBinUrl + "/ip");
+        assertEquals(200, response.code());
+        assertEquals(socksAuthIp, JSON.readTree(response.text()).get("origin").asText());
+
+        client.setProxy(DirectNoProxy.INSTANCE);
+        response = client.doGet(httpBinUrl + "/ip");
+        assertEquals(200, response.code());
+        assertNotEquals(socksAuthIp, JSON.readTree(response.text()).get("origin").asText());
     }
 
 }

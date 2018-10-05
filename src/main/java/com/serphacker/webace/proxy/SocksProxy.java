@@ -10,11 +10,9 @@ package com.serphacker.webace.proxy;
 import java.util.Objects;
 
 
-public class SocksProxy extends WaProxy {
+public class SocksProxy extends AuthentProxy {
     String ip;
     int port;
-    String username;
-    String password;
 
     public SocksProxy(String ip, int port) {
         this.ip = ip;
@@ -22,10 +20,9 @@ public class SocksProxy extends WaProxy {
     }
 
     public SocksProxy(String ip, int port, String username, String password) {
+        super(username, password);
         this.ip = ip;
         this.port = port;
-        this.username = username;
-        this.password = password;
     }
 
     public String getIp() {
@@ -44,22 +41,6 @@ public class SocksProxy extends WaProxy {
         this.port = port;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Override
     public String toString() {
         String str = "proxy:socks://";
@@ -71,67 +52,18 @@ public class SocksProxy extends WaProxy {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 71 * hash + Objects.hashCode(this.ip);
-        hash = 71 * hash + this.port;
-        hash = 71 * hash + Objects.hashCode(this.username);
-        hash = 71 * hash + Objects.hashCode(this.password);
-        return hash;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SocksProxy that = (SocksProxy) o;
+        return port == that.port &&
+            Objects.equals(ip, that.ip);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final SocksProxy other = (SocksProxy) obj;
-        if (this.port != other.port) {
-            return false;
-        }
-        if (!Objects.equals(this.ip, other.ip)) {
-            return false;
-        }
-        if (!Objects.equals(this.username, other.username)) {
-            return false;
-        }
-        if (!Objects.equals(this.password, other.password)) {
-            return false;
-        }
-        return true;
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), ip, port);
     }
-    
-    
-    
-    public int compareHost(SocksProxy p){
-        if (ip == null ^ p.ip == null) {
-            return (ip == null) ? -1 : 1;
-        }
 
-        if (ip == null && p.ip == null) {
-            return 0;
-        }
-        
-        int compareTo = ip.compareTo(p.ip);
-        if(compareTo != 0){
-            return compareTo;
-        }
-        
-        return Integer.compare(port, p.port);
-    }
-    
-    public boolean match(SocksProxy p){
-        return match(p.ip,  p.port);
-    }
-    
-    public boolean match(String ip, int port){
-        return Objects.equals(this.ip, ip) && this.port == port;
-    }
-    
 }
