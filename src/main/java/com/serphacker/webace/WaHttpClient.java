@@ -220,9 +220,6 @@ public class WaHttpClient implements Closeable {
     protected void reInitializeClient() {
         connectionManager.setSocketConfig(SocketConfig.custom().setSoTimeout(Timeout.ofMillis(config.timeoutMilli)).build());
         secureSocketFactory.setTrustAllSsl(config.isTrustAllSsl());
-        if (!proxy.equals(previousProxy)) {
-            closeConnection();
-        }
     }
 
     protected void initializeRequest(HttpRequest request, HttpClientContext context) {
@@ -281,11 +278,11 @@ public class WaHttpClient implements Closeable {
     }
 
     public void setProxy(WaProxy proxy) {
-        if (proxy == null) {
-            proxy = DirectNoProxy.INSTANCE;
+        this.proxy = proxy == null ? DirectNoProxy.INSTANCE : proxy;
+        if (!this.proxy.equals(previousProxy)) {
+            closeConnection();
         }
         this.previousProxy = this.proxy;
-        this.proxy = proxy;
 
         if (proxy instanceof AuthentProxy && ((AuthentProxy) proxy).hasCredentials()) {
 
@@ -301,7 +298,6 @@ public class WaHttpClient implements Closeable {
             if (proxy instanceof SocksProxy) {
                 SocksAuthenticator.INSTANCE.addSocksWithCredentials((SocksProxy) proxy);
             }
-
 
         }
 
