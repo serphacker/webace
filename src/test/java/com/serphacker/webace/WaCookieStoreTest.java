@@ -35,7 +35,7 @@ class WaCookieStoreTest {
         c3.setDomain("c3.example.com");
         c3.setPath("/path");
         c3.setAttribute("c3.attr.name", "c3.attr.val");
-        c3.setExpiryDate(new Date(System.currentTimeMillis() + 10000000l));
+        c3.setExpiryDate(new Date(System.currentTimeMillis() + 10000000L));
         store.add(c3);
 
         assertEquals(3, store.size());

@@ -3,7 +3,7 @@
 
 DOCKER_OPTIONS=""
 
-help() {
+show_help() {
     echo "$0 --env <file.env> <docker-compose-command>"
 }
 
@@ -32,7 +32,7 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 if [ "$ENVFILE" == "" ]; then
-    help
+    show_help
     exit 1
 fi
 

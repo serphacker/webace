@@ -76,7 +76,7 @@ class WaHttpClientRequestIT {
         assertTrue(response.text().length() > 0);
     }
 
-    public static Stream<Arguments> requestSupplier() throws Exception {
+    public static Stream<Arguments> requestSupplier() {
         WaHttpClient client = new WaHttpClient();
         return Stream.of(
             Arguments.of("GET", (TestRequest)client::doGet),
@@ -91,7 +91,7 @@ class WaHttpClientRequestIT {
     }
 
 
-    public static Stream<Arguments> requestWithHeadersSupplier() throws Exception {
+    public static Stream<Arguments> requestWithHeadersSupplier() {
         WaHttpClient client = new WaHttpClient();
         return Stream.of(
             Arguments.of("GET", (TestRequestWithHeaders)client::doGet),
@@ -136,7 +136,7 @@ class WaHttpClientRequestIT {
         return JsonBody.of(Map.of("k1", "v1", "k2", Map.of("k2.k1", "v1")));
     }
 
-    public static MultiPartBody createMultiPartBody() throws Exception {
+    public static MultiPartBody createMultiPartBody() {
         return MultiPartBody.builder(StandardCharsets.UTF_8)
             .add("form-key", "form-value")
             .add("binary-key", "binary-value".getBytes())
@@ -171,7 +171,7 @@ class WaHttpClientRequestIT {
         } else if (entity.getClass() == MultiPartBody.class) {
             assertMultiPartBody(jsonResponse);
         } else {
-            assertFalse(true, "not implemented\n" + response.text());
+            fail();
         }
 
         if(headers != null) {
@@ -200,7 +200,7 @@ class WaHttpClientRequestIT {
         assertEquals("v1", postedJson.at("/k2/k2.k1").asText());
     }
 
-    void assertMultiPartBody(JsonNode jsonResponse) throws IOException {
+    void assertMultiPartBody(JsonNode jsonResponse) {
         assertTrue(jsonResponse.at("/headers/Content-Type").asText().contains("multipart/form-data"));
         assertTrue(jsonResponse.at("/headers/Content-Type").asText().contains("charset=UTF-8"));
         assertEquals("form-value", jsonResponse.at("/form/form-key").asText());

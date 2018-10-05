@@ -99,19 +99,8 @@ public class SecureConnectionSocketFactory implements LayeredConnectionSocketFac
         this.trustAllSsl = trustAllSsl;
     }
 
-    /**
-     * Performs any custom initialization for a newly created SSLSocket (before the SSL handshake happens).
-     *
-     * The default implementation is a no-op, but could be overridden to, e.g., call
-     * {@link javax.net.ssl.SSLSocket#setEnabledCipherSuites(String[])}.
-     *
-     * @throws IOException may be thrown if overridden
-     */
-    protected void prepareSocket(final SSLSocket socket) throws IOException {
-    }
-
     @Override
-    public Socket createSocket(final HttpContext context) throws IOException {
+    public Socket createSocket(final HttpContext context) {
         return plainConnectionSocketFactory.createSocket(context);
     }
 
@@ -175,7 +164,7 @@ public class SecureConnectionSocketFactory implements LayeredConnectionSocketFac
         } else {
             // If supported protocols are not explicitly set, remove all SSL protocol versions
             final String[] allProtocols = sslsock.getEnabledProtocols();
-            final List<String> enabledProtocols = new ArrayList<String>(allProtocols.length);
+            final var enabledProtocols = new ArrayList<String>(allProtocols.length);
             for (String protocol : allProtocols) {
                 if (!protocol.startsWith("SSL")) {
                     enabledProtocols.add(protocol);
@@ -192,7 +181,6 @@ public class SecureConnectionSocketFactory implements LayeredConnectionSocketFac
         LOG.debug("Enabled protocols: " + Arrays.asList(sslsock.getEnabledProtocols()));
         LOG.debug("Enabled cipher suites:" + Arrays.asList(sslsock.getEnabledCipherSuites()));
 
-        prepareSocket(sslsock);
         LOG.debug("Starting handshake");
         sslsock.startHandshake();
         verifyHostname(sslsock, target);
@@ -236,7 +224,7 @@ public class SecureConnectionSocketFactory implements LayeredConnectionSocketFac
                     LOG.debug(" peer principal: " + peer.toString());
                     final Collection<List<?>> altNames1 = x509.getSubjectAlternativeNames();
                     if (altNames1 != null) {
-                        final List<String> altNames = new ArrayList<String>();
+                        final var altNames = new ArrayList<String>();
                         for (final List<?> aC : altNames1) {
                             if (!aC.isEmpty()) {
                                 altNames.add((String) aC.get(1));
@@ -249,7 +237,7 @@ public class SecureConnectionSocketFactory implements LayeredConnectionSocketFac
                     LOG.debug(" issuer principal: " + issuer.toString());
                     final Collection<List<?>> altNames2 = x509.getIssuerAlternativeNames();
                     if (altNames2 != null) {
-                        final List<String> altNames = new ArrayList<String>();
+                        final var altNames = new ArrayList<String>();
                         for (final List<?> aC : altNames2) {
                             if (!aC.isEmpty()) {
                                 altNames.add((String) aC.get(1));

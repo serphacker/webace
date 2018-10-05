@@ -26,17 +26,15 @@ public class SocksAuthenticator extends Authenticator {
     private SocksAuthenticator() {
     }
 
-    public boolean addSocksWithCredentials(SocksProxy proxy) {
+    public void addSocksWithCredentials(SocksProxy proxy) {
         if (!proxy.hasCredentials()) {
-            return false;
+            return;
         }
 
         credentials.put(
             proxy.getIp() + ":" + proxy.getPort(),
             new PasswordAuthentication(proxy.getUsername(), proxy.getPassword().toCharArray())
         );
-
-        return true;
     }
 
     @Override

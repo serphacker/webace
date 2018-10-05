@@ -25,13 +25,13 @@ public class ProxyRotator {
     }
     
     public boolean addAll(Collection<WaProxy> proxies){
-        synchronized(proxies){
+        synchronized (this.proxies) {
             return this.proxies.addAll(proxies);
         }
     }
     
     public boolean add(WaProxy proxy){
-        synchronized(proxy){
+        synchronized (proxies) {
             return proxies.add(proxy);
         }
     }
