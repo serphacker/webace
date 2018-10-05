@@ -16,10 +16,12 @@ import com.serphacker.webace.sockets.PlainSocksConnectionSocketFactory;
 import com.serphacker.webace.sockets.SecureConnectionSocketFactory;
 import org.apache.hc.client5.http.StandardMethods;
 import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.Credentials;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -166,6 +168,9 @@ public class WaHttpClient implements Closeable {
         reInitializeClient();
         initializeRequest(request, context);
         context.setAttribute(WaHttpContexts.WEBAXE_PROXY, proxy);
+        initPreemptiveAuth(request, context);
+
+
 
         try {
             response.executionTimerStart();
@@ -182,6 +187,34 @@ public class WaHttpClient implements Closeable {
         }
 
         return response;
+    }
+
+    protected void initPreemptiveAuth(ClassicHttpRequest request, HttpClientContext context) {
+
+        int port = request.getAuthority().getPort();
+        if (port == -1) {
+            switch (request.getScheme()) {
+                case "http":
+                    port = 80;
+                    break;
+                case "https":
+                    port = 443;
+                    break;
+            }
+        }
+
+        HttpHost host = new HttpHost(request.getAuthority().getHostName(), port, request.getScheme());
+
+        final Credentials credentials = credentialsProvider.getCredentials(
+            new AuthScope(host),
+            context
+        );
+
+        if (credentials != null) {
+            final var basicAuth = new BasicScheme();
+            basicAuth.initPreemptive(credentials);
+            context.resetAuthExchange(host, basicAuth);
+        }
     }
 
     protected void reInitializeClient() {
@@ -272,6 +305,14 @@ public class WaHttpClient implements Closeable {
 
         }
 
+    }
+
+    public void setCredentials(AuthScope authScope, Credentials credentials) {
+        credentialsProvider.setCredentials(authScope, credentials);
+    }
+
+    public void setCredentials(String hostname, String login, String password) {
+        setCredentials(new AuthScope(hostname, -1), new UsernamePasswordCredentials(login, password.toCharArray()));
     }
 
     @Override

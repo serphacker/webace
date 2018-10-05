@@ -326,12 +326,45 @@ class WaHttpClientIT {
 
     }
 
-//    @Test
-//    public void testCredential() {
-//        var cli = new WaHttpClient();
-//
-//        WaHttpResponse response = cli.doGet(httpBinUrl + "/basic-auth/user/pass");
-//        assertEquals(200, response.code());
-//    }
+    @Test
+    public void testAuth() {
+        WaHttpResponse response;
+        var cli = new WaHttpClient();
+
+        response = cli.doGet(httpBinUrl + "/basic-auth/user/pass");
+        assertEquals(401, response.code());
+
+        cli.setCredentials(httpBinDomain, "user", "pass");
+        response = cli.doGet(httpBinUrl + "/basic-auth/user/pass");
+        assertEquals(200, response.code());
+
+    }
+
+    @Test
+    public void testPreemptiveAuth() throws IOException {
+        WaHttpResponse response;
+        JsonNode jsonResponse;
+        var cli = new WaHttpClient();
+
+        cli.setCredentials(httpBinDomain, "user", "pass");
+        response = cli.doGet(httpBinUrl + "/hidden-basic-auth/user/pass");
+        jsonResponse = JSON.readTree(response.text());
+        assertEquals(200, response.code());
+        assertTrue(jsonResponse.get("authenticated").asBoolean(), "should be authenticated");
+
+        response = cli.doGet("https://httpbin.org/hidden-basic-auth/user/pass");
+        assertEquals(404, response.code());
+
+        response = cli.doGet(httpBinUrl + "/hidden-basic-auth/user/pass");
+        jsonResponse = JSON.readTree(response.text());
+        assertEquals(200, response.code());
+        assertTrue(jsonResponse.get("authenticated").asBoolean(), "should be authenticated");
+
+        cli.setCredentials("httpbin.org", "user", "pass");
+        response = cli.doGet("https://httpbin.org/hidden-basic-auth/user/pass");
+        jsonResponse = JSON.readTree(response.text());
+        assertEquals(200, response.code());
+        assertTrue(jsonResponse.get("authenticated").asBoolean(), "should be authenticated");
+    }
 
 }
