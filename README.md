@@ -1,7 +1,8 @@
-# WebAxe java HTTP client 
+# WebAce java HTTP client 
 
 [![build status](https://gitlab.com/serphacker/webace/badges/master/pipeline.svg)](https://gitlab.com/serphacker/webace/commits/master) 
 [![coverage report](https://gitlab.com/serphacker/webace/badges/master/coverage.svg)](https://gitlab.com/serphacker/webace/commits/master)
+[![code quality](https://api.codacy.com/project/badge/Grade/a1b564ef434c41e08af674bbec05b186)](https://www.codacy.com/app/noguespi/webace?utm_source=gitlab.com&amp;utm_medium=referral&amp;utm_content=serphacker/webace&amp;utm_campaign=Badge_Grade)
 
 WebAce is a java HTTP client for web scraping with great proxy support based on [Apache HttpComponents](https://hc.apache.org/index.html). 
 
