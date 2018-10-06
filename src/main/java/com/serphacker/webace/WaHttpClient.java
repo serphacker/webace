@@ -191,17 +191,7 @@ public class WaHttpClient implements Closeable {
 
     protected void initPreemptiveAuth(ClassicHttpRequest request, HttpClientContext context) {
 
-        int port = request.getAuthority().getPort();
-        if (port == -1) {
-            switch (request.getScheme()) {
-                case "http":
-                    port = 80;
-                    break;
-                case "https":
-                    port = 443;
-                    break;
-            }
-        }
+        int port = HttpDefaultPort.determine(request.getAuthority().getPort(), request.getScheme());
 
         HttpHost host = new HttpHost(request.getAuthority().getHostName(), port, request.getScheme());
 

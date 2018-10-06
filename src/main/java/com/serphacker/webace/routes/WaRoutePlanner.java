@@ -8,6 +8,7 @@
 
 package com.serphacker.webace.routes;
 
+import com.serphacker.webace.HttpDefaultPort;
 import com.serphacker.webace.WaHttpContexts;
 import com.serphacker.webace.proxy.*;
 import org.apache.hc.client5.http.HttpRoute;
@@ -32,19 +33,7 @@ public class WaRoutePlanner implements HttpRoutePlanner {
     public HttpRoute determineRoute(HttpHost target, HttpContext context) throws HttpException {
         String routeHostname = routes.get(target.getHostName(), target.getHostName());
         String routeScheme = target.getSchemeName();
-        int routePort = target.getPort();
-        if(routePort == -1) {
-            switch(routeScheme) {
-                case "http":
-                    routePort = 80;
-                    break;
-                case "https":
-                    routePort = 443;
-                    break;
-                default:
-                    routePort = 80;
-            }
-        }
+        int routePort = HttpDefaultPort.determine(target.getPort(), routeScheme);
         HttpHost routeHost = new HttpHost(routeHostname, routePort, routeScheme);
 
         WaProxy proxy = null;
