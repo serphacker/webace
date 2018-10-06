@@ -35,5 +35,6 @@ if [ "$ENVFILE" == "" ]; then
     exit 1
 fi
 
-export $(cat $ENVFILE| xargs)
-docker-compose -p $ENVFILE $@
+export $(egrep -v '(^\s*#)|(^\s+$)' $ENVFILE | xargs)
+PROJECT_NAME="${ENVFILE%.*}"
+docker-compose -p $PROJECT_NAME $@
