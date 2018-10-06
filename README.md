@@ -26,11 +26,8 @@ Features :
  ## Install
  
  [![Maven Central](https://img.shields.io/maven-central/v/com.serphacker.webace/webace.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.serphacker.webace%22%20AND%20a:%22webace%22)
- 
- Require java 11
- 
- Maven: 
- 
+ (require java minimal version 11 )
+
  ```xml
 <dependency>
   <groupId>com.serphacker.webace</groupId>
