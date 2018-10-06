@@ -45,7 +45,17 @@ Features :
  
  ## Build
 
-TODO
+### Building jar
+
+`mvn clean package`
+
+### Running integration tests
+
+1. Copy `docker/webace.env.template` to `docker/webace_it.env`
+2. In `docker` directory, run `./docker-compose.sh --env webace_it.env up`. It will starts all the required container
+(httpbin server, squid proxies, socks proxies, etc.).
+3. Back in base directory, run the integration tests with the following command : 
+`mvn -P integration-test -DhttpBinDomain=172.29.1.1 -Dtest.service-backend=docker-compose clean verify`
 
 ## License
 
