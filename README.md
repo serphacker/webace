@@ -3,7 +3,7 @@
 [![build status](https://gitlab.com/serphacker/webace/badges/master/pipeline.svg)](https://gitlab.com/serphacker/webace/commits/master) 
 [![coverage report](https://gitlab.com/serphacker/webace/badges/master/coverage.svg)](https://gitlab.com/serphacker/webace/commits/master)
 [![code quality](https://api.codacy.com/project/badge/Grade/a1b564ef434c41e08af674bbec05b186)](https://www.codacy.com/app/noguespi/webace?utm_source=gitlab.com&amp;utm_medium=referral&amp;utm_content=serphacker/webace&amp;utm_campaign=Badge_Grade)
-[![last version](https://maven-badges.herokuapp.com/maven-central/serphacker/webace/badge.svg)](https://maven-badges.herokuapp.com/maven-central/serphacker/webace)
+[![Maven Central](https://img.shields.io/maven-central/v/com.serphacker.webace/webace.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.serphacker.webace%22%20AND%20a:%22webace%22)
 
 WebAce is a java HTTP client for web scraping with great proxy support based on [Apache HttpComponents](https://hc.apache.org/index.html). 
 
@@ -25,7 +25,7 @@ Features :
  
  ## Install
  
- [![last version](https://maven-badges.herokuapp.com/maven-central/serphacker/webace/badge.svg)](https://maven-badges.herokuapp.com/maven-central/serphacker/webace)
+ [![Maven Central](https://img.shields.io/maven-central/v/com.serphacker.webace/webace.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.serphacker.webace%22%20AND%20a:%22webace%22)
  
  Require java 11
  
@@ -37,12 +37,6 @@ Features :
   <artifactId>webace</artifactId>
   <version>LATEST</version>
 </dependency>
-```
-
-Gradle:
-
-```text
-compile 'com.serphacker.webace:webace:LATEST'
 ```
  
  ## Usage
