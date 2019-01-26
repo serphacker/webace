@@ -10,13 +10,12 @@ package com.serphacker.webace.proxy;
 
 import com.serphacker.webace.WaHttpClient;
 import com.serphacker.webace.WaHttpResponse;
-import org.apache.hc.core5.http.config.SocketConfig;
 import org.apache.hc.core5.http.impl.BasicEndpointDetails;
 import org.apache.hc.core5.http.impl.bootstrap.HttpServer;
 import org.apache.hc.core5.http.impl.bootstrap.ServerBootstrap;
+import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.protocol.HttpCoreContext;
-import org.apache.hc.core5.io.ShutdownType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -49,7 +48,7 @@ class BindProxyIT {
 
     @AfterAll
     public static void afterAll() {
-        SERVER.shutdown(ShutdownType.IMMEDIATE);
+        SERVER.initiateShutdown();
         SERVER.close();
     }
 

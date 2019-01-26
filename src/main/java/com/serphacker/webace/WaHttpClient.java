@@ -30,7 +30,8 @@ import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.config.RegistryBuilder;
-import org.apache.hc.core5.http.config.SocketConfig;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.util.TimeValue;
 import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class WaHttpClient implements Closeable {
 
@@ -70,7 +70,7 @@ public class WaHttpClient implements Closeable {
                 .register("https", secureSocketFactory)
                 .build()
         );
-        connectionManager.setSocketConfig(SocketConfig.custom().setSoTimeout(Timeout.ofMillis(config.timeoutMilli)).build());
+        connectionManager.setSocketConfig(SocketConfig.custom().setSoTimeout(Timeout.ofMilliseconds(config.timeoutMilli)).build());
 
         client = HttpClients
             .custom()
@@ -171,7 +171,6 @@ public class WaHttpClient implements Closeable {
         initPreemptiveAuth(request, context);
 
 
-
         try {
             response.executionTimerStart();
             response.setContext(context);
@@ -193,7 +192,7 @@ public class WaHttpClient implements Closeable {
 
         int port = HttpDefaultPort.determine(request.getAuthority().getPort(), request.getScheme());
 
-        HttpHost host = new HttpHost(request.getAuthority().getHostName(), port, request.getScheme());
+        HttpHost host = new HttpHost(request.getScheme(), request.getAuthority().getHostName(), port);
 
         final Credentials credentials = credentialsProvider.getCredentials(
             new AuthScope(host),
@@ -208,7 +207,7 @@ public class WaHttpClient implements Closeable {
     }
 
     protected void reInitializeClient() {
-        connectionManager.setSocketConfig(SocketConfig.custom().setSoTimeout(Timeout.ofMillis(config.timeoutMilli)).build());
+        connectionManager.setSocketConfig(SocketConfig.custom().setSoTimeout(Timeout.ofMilliseconds(config.timeoutMilli)).build());
         secureSocketFactory.setTrustAllSsl(config.isTrustAllSsl());
     }
 
@@ -223,8 +222,8 @@ public class WaHttpClient implements Closeable {
         }
 
         RequestConfig.Builder configBuilder = RequestConfig.copy(context.getRequestConfig());
-        configBuilder.setConnectionTimeout(Timeout.ofMillis(config.timeoutMilli));
-        configBuilder.setConnectionRequestTimeout(Timeout.ofMillis(config.timeoutMilli));
+        configBuilder.setConnectTimeout(Timeout.ofMilliseconds(config.timeoutMilli));
+        configBuilder.setConnectionRequestTimeout(Timeout.ofMilliseconds(config.timeoutMilli));
         configBuilder.setMaxRedirects(config.maxRedirect);
         configBuilder.setRedirectsEnabled(config.maxRedirect > 0);
         RequestConfig config = configBuilder.build();
@@ -260,7 +259,7 @@ public class WaHttpClient implements Closeable {
     }
 
     public void closeConnection() {
-        connectionManager.closeIdle(0, TimeUnit.NANOSECONDS);
+        connectionManager.closeIdle(TimeValue.ofMilliseconds(0));
     }
 
     public WaProxy getProxy() {

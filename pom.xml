@@ -47,22 +47,26 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
+        <!-- check for latest version using : mvn -P versions -N versions:display-dependency-updates -->
+        <!-- download sources : mvn dependency:sources -->
+        <!-- download javadoc : mvn dependency:resolve -Dclassifier=javadoc -->
+
         <!-- dependencies -->
         <!-- https://github.com/junit-team/junit5/releases -->
-        <org.junit.jupiter.junit-jupiter-api.version>5.3.1</org.junit.jupiter.junit-jupiter-api.version>
+        <org.junit.jupiter.junit-jupiter-api.version>5.3.2</org.junit.jupiter.junit-jupiter-api.version>
         <!-- https://github.com/qos-ch/slf4j/releases -->
         <org.slf4j.slf4j-api.version>1.7.25</org.slf4j.slf4j-api.version>
         <!-- https://github.com/apache/httpcomponents-client/releases -->
-        <org.apache.httpcomponents.client5.httpclient5.version>5.0-beta1
+        <org.apache.httpcomponents.client5.httpclient5.version>5.0-beta3
         </org.apache.httpcomponents.client5.httpclient5.version>
         <!-- https://github.com/FasterXML/jackson-databind/releases -->
-        <com.fasterxml.jackson.core.version>2.9.7</com.fasterxml.jackson.core.version>
+        <com.fasterxml.jackson.core.version>2.9.8</com.fasterxml.jackson.core.version>
         <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
         <ch.qos.logback.logback-classic.version>1.2.3</ch.qos.logback.logback-classic.version>
 
         <!-- plugins -->
         <!-- https://maven.apache.org/surefire/download.cgi -->
-        <org.apache.maven.plugins.maven-surefire-plugin>2.22.0</org.apache.maven.plugins.maven-surefire-plugin>
+        <org.apache.maven.plugins.maven-surefire-plugin>3.0.0-M3</org.apache.maven.plugins.maven-surefire-plugin>
         <!-- https://maven.apache.org/plugins/maven-source-plugin/download.cgi -->
         <org.apache.maven.plugins.maven-source-plugin>3.0.1</org.apache.maven.plugins.maven-source-plugin>
         <!-- https://maven.apache.org/plugins/maven-javadoc-plugin/download.cgi -->
@@ -204,6 +208,52 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+        </profile>
+
+        <!-- check for latest version using : mvn -P versions -N versions:display-dependency-updates -->
+        <profile>
+            <id>versions</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>3.0.0-M2</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-maven</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireMavenVersion>
+                                            <version>3.8</version>
+                                        </requireMavenVersion>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>versions-maven-plugin</artifactId>
+                        <version>2.7</version>
+                        <configuration>
+                            <rulesUri>file:///${project.basedir}/dependency-updates-rules.xml</rulesUri>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>display-dependency-updates</goal>
+                                    <goal>display-plugin-updates</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <profile>
