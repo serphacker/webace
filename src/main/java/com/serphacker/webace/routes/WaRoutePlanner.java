@@ -34,7 +34,7 @@ public class WaRoutePlanner implements HttpRoutePlanner {
         String routeHostname = routes.get(target.getHostName(), target.getHostName());
         String routeScheme = target.getSchemeName();
         int routePort = HttpDefaultPort.determine(target.getPort(), routeScheme);
-        HttpHost routeHost = new HttpHost(routeHostname, routePort, routeScheme);
+        HttpHost routeHost = new HttpHost(routeScheme, routeHostname, routePort);
 
         WaProxy proxy = null;
         if(context != null) {
