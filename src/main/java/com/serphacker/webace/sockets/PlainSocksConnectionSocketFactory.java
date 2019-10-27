@@ -58,7 +58,7 @@ public class PlainSocksConnectionSocketFactory implements ConnectionSocketFactor
         try {
             sock.connect(remoteAddress, connectTimeout.toMillisIntBound());
         } catch (SocketTimeoutException ex) {
-            throw new ConnectTimeoutException(ex, host, remoteAddress.getAddress());
+            throw new ConnectTimeoutException(ex.getMessage(), host);
         }
         return sock;
     }

@@ -14,7 +14,6 @@ import com.serphacker.webace.routes.WaRoutePlanner;
 import com.serphacker.webace.routes.WaRoutes;
 import com.serphacker.webace.sockets.PlainSocksConnectionSocketFactory;
 import com.serphacker.webace.sockets.SecureConnectionSocketFactory;
-import org.apache.hc.client5.http.StandardMethods;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.Credentials;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
@@ -99,7 +98,7 @@ public class WaHttpClient implements Closeable {
     }
 
     public WaHttpResponse doGet(String uri, List<Header> headers) {
-        return doRequest(StandardMethods.GET.name(), uri, headers);
+        return doRequest(Methods.GET.name(), uri, headers);
     }
 
     public WaHttpResponse doDelete(String uri) {
@@ -107,7 +106,7 @@ public class WaHttpClient implements Closeable {
     }
 
     public WaHttpResponse doDelete(String uri, List<Header> headers) {
-        return doRequest(StandardMethods.DELETE.name(), uri, headers);
+        return doRequest(Methods.DELETE.name(), uri, headers);
     }
 
     public WaHttpResponse doPost(String uri, PostBodyEntity body) {
@@ -115,7 +114,7 @@ public class WaHttpClient implements Closeable {
     }
 
     public WaHttpResponse doPost(String uri, PostBodyEntity body, List<Header> headers) {
-        return doRequest(StandardMethods.POST.name(), uri, body, headers);
+        return doRequest(Methods.POST.name(), uri, body, headers);
     }
 
     public WaHttpResponse doPut(String uri, PostBodyEntity body) {
@@ -123,7 +122,7 @@ public class WaHttpClient implements Closeable {
     }
 
     public WaHttpResponse doPut(String uri, PostBodyEntity body, List<Header> headers) {
-        return doRequest(StandardMethods.PUT.name(), uri, body, headers);
+        return doRequest(Methods.PUT.name(), uri, body, headers);
     }
 
     public WaHttpResponse doPatch(String uri, PostBodyEntity body) {
@@ -131,7 +130,7 @@ public class WaHttpClient implements Closeable {
     }
 
     public WaHttpResponse doPatch(String uri, PostBodyEntity body, List<Header> headers) {
-        return doRequest(StandardMethods.PATCH.name(), uri, body, headers);
+        return doRequest(Methods.PATCH.name(), uri, body, headers);
     }
 
     public WaHttpResponse doRequest(String verb, String uri, List<Header> headers) {
